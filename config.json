@@ -1,0 +1,11 @@
+{
+    "chunk_size": 2048,
+    "api_port": 18100,
+    "meta_port": 51001,
+    "stat_port": 37373,
+    "storage_port": {
+        "shard_first": 14420,
+        "shard_second": 28840,
+        "shard_third": 36366
+    }
+}

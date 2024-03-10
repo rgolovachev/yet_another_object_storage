@@ -1,0 +1,97 @@
+services:
+  api_service:
+    container_name: api_service
+    image: api
+    build:
+      context: ./api_service
+      dockerfile: api.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./meta_service:/meta_service
+      - ./common:/common
+    ports:
+      - 18100:18100
+    depends_on:
+      - meta_service
+      - shard_first
+      - shard_second
+  
+  meta_service:
+    container_name: meta_service
+    image: meta
+    build:
+      context: ./meta_service
+      dockerfile: meta.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./common:/common
+    ports:
+      - :51001
+    depends_on:
+      - meta_db
+  
+  meta_db:
+    container_name: meta_db
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: meta_db
+      POSTGRES_USER: meta_service
+      POSTGRES_PASSWORD: super_secret_pass
+    ports:
+      - :5432
+  
+  shard_first:
+    container_name: shard_first
+    image: storage
+    build:
+      context: ./storage_service
+      dockerfile: storage.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./common:/common
+    command: ["shard_first"]
+    ports:
+      - :14420
+  
+  shard_second:
+    container_name: shard_second
+    image: storage
+    build:
+      context: ./storage_service
+      dockerfile: storage.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./common:/common
+    command: ["shard_second"]
+    ports:
+      - :28840
+
+  shard_third:
+    container_name: shard_third
+    image: storage
+    build:
+      context: ./storage_service
+      dockerfile: storage.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./common:/common
+    command: ["shard_third"]
+    ports:
+      - :36366
+  
+  stat_service:
+    container_name: stat_service
+    image: stat
+    build:
+      context: ./stat_service
+      dockerfile: stat.dockerfile
+    volumes:
+      - ./config.json:/config.json
+      - ./common:/common
+    ports:
+      - 37373:37373
+    depends_on:
+      - shard_first
+      - shard_second
+    

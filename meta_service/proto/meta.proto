@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package meta;
+
+option go_package = "meta/;metapb";
+
+message CreateBucketReq {
+    string bucket = 1;
+}
+
+message CreateBucketResp {
+}
+
+message DeleteBucketReq {
+    string bucket = 1;
+}
+
+message DeleteBucketResp {
+}
+
+message GetFilesReq {
+    string bucket = 1;
+}
+
+message GetFilesResp {
+    repeated string files = 1;
+}
+
+message CreateFileReq {
+    string bucket = 1;
+    string file = 2;
+    string content_type = 3;
+    repeated ChunkFilenameWithShard chunks = 4;
+}
+
+message CreateFileResp {
+}
+
+message DeleteFileReq {
+    string bucket = 1;
+    string file = 2;
+}
+
+message DeleteFileResp {
+    repeated ChunkFilenameWithShard chunks = 1;
+}
+
+message ChunkFilenameWithShard {
+    string filename = 1;
+    string shard = 2;
+}
+
+message GetFileChunksReq {
+    string bucket = 1;
+    string file = 2;
+}
+
+message GetFileChunksResp {
+    repeated ChunkFilenameWithShard chunks = 1;
+    string content_type = 2;
+}
+
+service ApiWithMetaService {
+    rpc CreateBucket(CreateBucketReq) returns (CreateBucketResp) {}
+    rpc DeleteBucket(DeleteBucketReq) returns (DeleteBucketResp) {}
+    rpc GetFiles(GetFilesReq) returns (GetFilesResp) {}
+    rpc CreateFile(CreateFileReq) returns (CreateFileResp) {}
+    rpc DeleteFile(DeleteFileReq) returns (DeleteFileResp) {}
+    rpc GetFileChunks(GetFileChunksReq) returns (GetFileChunksResp) {}
+}
